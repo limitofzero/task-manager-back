@@ -15,5 +15,6 @@ export class RegisterRequestDto {
   @MaxLength(20)
   public password: string;
 
+  @IsNotEmpty()
   public recaptcha: string;
 }

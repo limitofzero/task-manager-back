@@ -1,0 +1,8 @@
+node_modules
+.idea
+.git
+.gitignore
+README.md
+README.old.md
+.env
+dist
