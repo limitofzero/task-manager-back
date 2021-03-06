@@ -23,7 +23,6 @@ module.exports = {
     'arrow-parens': 'off',
     'newline-per-chained-call': 'error',
     "object-curly-newline": ["error", {
-      "ObjectExpression": "always",
       "ObjectPattern": { "multiline": true },
       "ImportDeclaration": "never",
       "ExportDeclaration": { "multiline": true, "minProperties": 3 }

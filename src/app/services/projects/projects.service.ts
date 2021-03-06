@@ -14,9 +14,12 @@ export class ProjectsService {
       .then((result) => result.rows);
   }
 
-  public async getProjectByName(name: string): Promise<Project> {
+  public async findOneBy(params: Record<string, any>): Promise<Project> {
+    const select = `SELECT * FROM projects WHERE`;
+    const conditions = this.constructConditions(params);
+    console.log('REQ: ', `${select} ${conditions}`);
     return this.client
-      .query(`SELECT * FROM projects WHERE name = '${name}'`)
+      .query(`${select} ${conditions}`)
       .then((result) => result?.rows?.[0]);
   }
 
@@ -25,6 +28,30 @@ export class ProjectsService {
         INSERT INTO projects (name) VALUES ('${project.name}')
     `);
 
-    return this.getProjectByName(project.name);
+    return this.findOneBy(project);
+  }
+
+  private constructConditions(params: Record<string, any>): string {
+    return Object.keys(params).reduce((acc, key, index) => {
+      if (index !== 0) {
+        acc += ' AND ';
+      }
+
+      const value = params[key];
+      acc += `${key} = ${this.getValueForCondition(value)}`;
+
+      return acc;
+    }, '');
+  }
+
+  private getValueForCondition(value: any): string {
+    switch (typeof value) {
+      case 'string':
+        return `'${value}'`;
+      case 'number':
+        return value.toString();
+      case 'boolean':
+        return value ? 'TRUE' : 'FALSE';
+    }
   }
 }

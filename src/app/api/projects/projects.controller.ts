@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 
 import { Project } from '../../services/projects/project';
 import { ProjectsService } from '../../services/projects/projects.service';
@@ -11,6 +11,11 @@ export class ProjectsController {
   @Get()
   public getProjects(): Promise<Project[]> {
     return this.projects.getProjects();
+  }
+
+  @Get(':id')
+  public getProjectById(@Param() params: { id: string }): Promise<Project> {
+    return this.projects.findOneBy({ id: params.id });
   }
 
   @Post('create')
