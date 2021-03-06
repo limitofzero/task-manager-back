@@ -13,4 +13,18 @@ export class ProjectsService {
       .query(`SELECT * FROM projects`)
       .then((result) => result.rows);
   }
+
+  public async getProjectByName(name: string): Promise<Project> {
+    return this.client
+      .query(`SELECT * FROM projects WHERE name = '${name}'`)
+      .then((result) => result?.rows?.[0]);
+  }
+
+  public async createProject(project: { name: string }): Promise<Project> {
+    await this.client.query(`
+        INSERT INTO projects (name) VALUES ('${project.name}')
+    `);
+
+    return this.getProjectByName(project.name);
+  }
 }
