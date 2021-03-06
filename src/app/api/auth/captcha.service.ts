@@ -29,11 +29,15 @@ export class CaptchaService {
             return of(true);
           } else {
             // todo handle errors
-            return throwError({ message: data['error-codes'][0] });
+            return throwError({
+              message: data['error-codes'][0],
+            });
           }
         }
 
-        return throwError({ message: response.statusText });
+        return throwError({
+          message: response.statusText,
+        });
       }),
     );
   }

@@ -73,6 +73,13 @@ export class MailService {
   ): Observable<string> {
     const { email } = user;
 
-    return this.token.createJWT({ email }, { expiresIn });
+    return this.token.createJWT(
+      {
+        email,
+      },
+      {
+        expiresIn,
+      },
+    );
   }
 }

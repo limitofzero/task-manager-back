@@ -15,7 +15,11 @@ export class TokenService {
     const secret = process.env.SECRET ?? '';
     const { expiresIn } = options;
 
-    return of(sign(payload, secret, { expiresIn }));
+    return of(
+      sign(payload, secret, {
+        expiresIn,
+      }),
+    );
   }
 
   public verifyJWT<T>(token: string): Observable<T> {

@@ -40,8 +40,20 @@ export class LoginService {
     const expiresIn = this.getExpiresIn(rememberMe);
 
     return this.token
-      .createJWT({ username, email }, { expiresIn })
-      .pipe(map((token) => ({ token })));
+      .createJWT(
+        {
+          username,
+          email,
+        },
+        {
+          expiresIn,
+        },
+      )
+      .pipe(
+        map((token) => ({
+          token,
+        })),
+      );
   }
 
   private getExpiresIn(rememberMe: boolean): string {

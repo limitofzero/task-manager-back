@@ -20,5 +20,13 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    'arrow-parens': 'off',
+    'newline-per-chained-call': 'error',
+    "object-curly-newline": ["error", {
+      "ObjectExpression": "always",
+      "ObjectPattern": { "multiline": true },
+      "ImportDeclaration": "never",
+      "ExportDeclaration": { "multiline": true, "minProperties": 3 }
+    }]
   },
 };

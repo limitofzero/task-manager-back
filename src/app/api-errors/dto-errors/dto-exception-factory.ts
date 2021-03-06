@@ -7,7 +7,9 @@ export function dtoExceptionFactory(
   errors: ValidationError[],
 ): BadRequestException {
   const convertedErrors = convertDtoErrors(errors);
-  return new InvalidArgumentsException({ errors: convertedErrors });
+  return new InvalidArgumentsException({
+    errors: convertedErrors,
+  });
 }
 
 function convertDtoErrors(errors: ValidationError[]): DtoPropertyError[] {
