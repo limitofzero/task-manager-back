@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Client } from 'pg';
 
+import { AddUserDto } from '../../api/projects/dto/add-user.dto';
 import { DB_CLIENT } from '../../db/db.module';
 import { Project } from './project';
 
@@ -29,6 +30,14 @@ export class ProjectsService {
     `);
 
     return this.findOneBy(project);
+  }
+
+  public async addUser(addUser: AddUserDto): Promise<void> {
+    return this.client
+      .query(
+        `INSERT INTO projects_users (user_id, project_id) VALUES ('${addUser.userId}' ,'${addUser.projectId}')`,
+      )
+      .then(() => null);
   }
 
   private constructConditions(params: Record<string, any>): string {

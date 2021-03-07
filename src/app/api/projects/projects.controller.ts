@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 
 import { Project } from '../../services/projects/project';
 import { ProjectsService } from '../../services/projects/projects.service';
+import { AddUserDto } from './dto/add-user.dto';
 import { CreateProjectDto } from './dto/create-project.dto';
 
 @Controller('projects')
@@ -21,5 +22,10 @@ export class ProjectsController {
   @Post('create')
   public createProject(@Body() project: CreateProjectDto): Promise<Project> {
     return this.projects.createProject(project);
+  }
+
+  @Post('add-user')
+  public addUser(@Body() user: AddUserDto): Promise<void> {
+    return this.projects.addUser(user);
   }
 }
