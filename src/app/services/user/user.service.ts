@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Client } from 'pg';
 
 import { DB_CLIENT } from '../../db/db.module';
+import { Project } from '../projects/project';
 import { User } from './user.interface';
 
 @Injectable()
@@ -32,5 +33,15 @@ export class UserService {
         VALUES ('${username}', '${email}', '${password}')`,
       )
       .then();
+  }
+
+  public getUserProjects(id: string): Promise<Project[]> {
+    return this.client
+      .query(
+        `
+        SELECT projects.id, projects.name FROM projects_users JOIN projects ON projects_users.user_id = '${id}' AND projects.id = projects_users.project_id;
+        `,
+      )
+      .then((result) => result?.rows);
   }
 }
