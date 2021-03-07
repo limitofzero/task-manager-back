@@ -18,9 +18,14 @@ export class TasksService {
   }
 
   public async getTasksByPerformerId(id: string): Promise<Task[]> {
-    console.log(id);
     return this.client
       .query(`${this.BASE_REQ} WHERE performer_id = $1;`, [id])
+      .then((result) => result?.rows);
+  }
+
+  public async getTasksByCreatorId(id: string): Promise<Task[]> {
+    return this.client
+      .query(`${this.BASE_REQ} WHERE creator_id = $1;`, [id])
       .then((result) => result?.rows);
   }
 }

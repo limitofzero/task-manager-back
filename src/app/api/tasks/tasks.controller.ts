@@ -18,4 +18,11 @@ export class TasksController {
   ): Promise<Task[]> {
     return this.tasks.getTasksByPerformerId(params.id);
   }
+
+  @Get('creator/:id')
+  public async getByCreatorId(
+    @Param() params: { id: string },
+  ): Promise<Task[]> {
+    return this.tasks.getTasksByCreatorId(params.id);
+  }
 }
