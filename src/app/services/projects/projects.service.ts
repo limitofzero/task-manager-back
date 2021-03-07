@@ -25,11 +25,13 @@ export class ProjectsService {
   }
 
   public async createProject(project: { name: string }): Promise<Project> {
-    await this.client.query(`
-        INSERT INTO projects (name) VALUES ('${project.name}')
-    `);
-
-    return this.findOneBy(project);
+    return this.client
+      .query(
+        `
+        INSERT INTO projects (name) VALUES ('${project.name}') RETURNING *
+    `,
+      )
+      .then((result) => result.rows?.[0]);
   }
 
   public async addUser(addUser: AddUserDto): Promise<void> {

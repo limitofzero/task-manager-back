@@ -17,12 +17,7 @@ export class TaskStatusService {
   public async addStatus(description: string): Promise<TaskStatus> {
     return this.client
       .query(
-        `INSERT INTO task_statuses (description) VALUES ('${description}')`,
-      )
-      .then(() =>
-        this.client.query(
-          `SELECT * FROM task_statuses WHERE description = '${description}'`,
-        ),
+        `INSERT INTO task_statuses (description) VALUES ('${description}') RETURNING *`,
       )
       .then((result) => result?.rows?.[0]);
   }
