@@ -48,18 +48,14 @@ export class TasksService {
       projectId,
     } = createTaskDto;
 
-    await this.client.query(
-      `
-        INSERT INTO tasks
-        (creator_id, performer_id, status_id, title, description, project_id)
-        VALUES($1, $2, $3, $4, $5, $6)`,
-      [creatorId, performerId, statusId, title, description, projectId],
-    );
-
     return this.client
       .query(
-        `${this.BASE_REQ} WHERE creator_id = $1 AND title = $2 AND project_id = $3`,
-        [creatorId, title, projectId],
+        `
+        INSERT INTO tasks
+        (creator_id, performer_id, status_id, title, description, project_id)
+        VALUES($1, $2, $3, $4, $5, $6)
+        RETURNING *`,
+        [creatorId, performerId, statusId, title, description, projectId],
       )
       .then((result) => result?.rows?.[0]);
   }
