@@ -25,4 +25,11 @@ export class TasksController {
   ): Promise<Task[]> {
     return this.tasks.getTasksByCreatorId(params.id);
   }
+
+  @Get('projects/:id')
+  public async getByProjectId(
+    @Param() params: { id: string },
+  ): Promise<Task[]> {
+    return this.tasks.getTasksByProjectId(params.id);
+  }
 }
