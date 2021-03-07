@@ -3,7 +3,7 @@ export interface Task {
   title: string;
   description: string;
   status: string;
-  projectId: string;
-  creatorId: string;
-  performerId: string;
+  project_id: string;
+  creator_id: string;
+  performer_id: string;
 }
