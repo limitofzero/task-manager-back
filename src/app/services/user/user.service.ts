@@ -35,7 +35,7 @@ export class UserService {
       .then();
   }
 
-  public getUserProjects(id: string): Promise<Project[]> {
+  public async getUserProjects(id: string): Promise<Project[]> {
     return this.client
       .query(
         `

@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 
 import { Project } from '../../services/projects/project';
 import { ProjectsService } from '../../services/projects/projects.service';
+import { User } from '../../services/user/user.interface';
 import { AddUserDto } from './dto/add-user.dto';
 import { CreateProjectDto } from './dto/create-project.dto';
 
@@ -12,6 +13,11 @@ export class ProjectsController {
   @Get()
   public getProjects(): Promise<Project[]> {
     return this.projects.getProjects();
+  }
+
+  @Get('users/:id')
+  public getProjectUsers(@Param() params: { id: string }): Promise<User[]> {
+    return this.projects.getProjectUsers(params.id);
   }
 
   @Get(':id')

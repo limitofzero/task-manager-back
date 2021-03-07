@@ -3,6 +3,7 @@ import { Client } from 'pg';
 
 import { AddUserDto } from '../../api/projects/dto/add-user.dto';
 import { DB_CLIENT } from '../../db/db.module';
+import { User } from '../user/user.interface';
 import { Project } from './project';
 
 @Injectable()
@@ -32,6 +33,18 @@ export class ProjectsService {
     `,
       )
       .then((result) => result.rows?.[0]);
+  }
+
+  public async getProjectUsers(id: string): Promise<User[]> {
+    return this.client
+      .query(
+        `
+        SELECT users.id, users.username, users.email FROM users JOIN projects_users 
+        ON projects_users.project_id = $1 AND projects_users.user_id = users.id
+      `,
+        [id],
+      )
+      .then((result) => result?.rows);
   }
 
   public async addUser(addUser: AddUserDto): Promise<void> {
