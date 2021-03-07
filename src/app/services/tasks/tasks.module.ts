@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
-import { TasksService } from './tasks.service';
+
 import { DbModule } from '../../db/db.module';
+import { TasksService } from './tasks.service';
 
 @Module({
   imports: [DbModule.forFeature()],
