@@ -2,10 +2,10 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 
 import { Project } from '../../services/projects/project';
 import { ProjectsService } from '../../services/projects/projects.service';
+import { ShortProjectInfo } from '../../services/projects/short-project-info';
 import { User } from '../../services/user/user.interface';
 import { AddUserDto } from './dto/add-user.dto';
 import { CreateProjectDto } from './dto/create-project.dto';
-import { ShortProjectInfo } from '../../services/projects/short-project-info';
 
 @Controller('projects')
 export class ProjectsController {
@@ -17,7 +17,9 @@ export class ProjectsController {
   }
 
   @Get('short-info/:id')
-  public getShortProjectInfo(@Param() params: { id: string }): Promise<ShortProjectInfo> {
+  public getShortProjectInfo(
+    @Param() params: { id: string },
+  ): Promise<ShortProjectInfo> {
     return this.projects.getShortProjectInfo(params.id);
   }
 
