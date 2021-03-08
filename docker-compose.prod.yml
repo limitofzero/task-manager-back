@@ -1,0 +1,32 @@
+version: "3"
+
+volumes:
+  app_prod_db:
+    name: app_prod_db
+
+services:
+  app_prod:
+    container_name: app_prod
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    command: npm run start:prod
+    env_file:
+      - .env-prod
+    ports:
+      - "3000:3000"
+    links:
+      - postgres
+
+  postgres:
+    container_name: app-prod-db
+    image: postgres
+    volumes:
+      - app_prod_db:/data/db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DATABASE}
