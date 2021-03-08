@@ -76,6 +76,27 @@ export class TasksService {
       .then((result) => result?.rows?.[0]);
   }
 
+  public async assignUser(
+    taskId: string,
+    userId: string,
+    projectId: string,
+  ): Promise<Task> {
+    const isUserHasInProject = await this.isUserHasInProject(userId, projectId);
+
+    if (!isUserHasInProject) {
+      throw new Error(`Project hasn't user ${projectId}`);
+    }
+
+    return this.client
+      .query(
+        `
+      UPDATE tasks SET performer_id = $1 WHERE id = $2 RETURNING *;
+    `,
+        [userId, taskId],
+      )
+      .then((result) => result?.rows?.[0]);
+  }
+
   private isUserHasInProject(
     userId: string,
     projectId: string,

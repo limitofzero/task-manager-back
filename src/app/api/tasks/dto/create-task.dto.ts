@@ -17,7 +17,7 @@ export class CreateTaskDto {
   @IsOptional()
   @IsNotEmpty()
   @IsUUID()
-  public performerId: string;
+  public performerId?: string;
 
   @IsNotEmpty()
   @IsUUID()
