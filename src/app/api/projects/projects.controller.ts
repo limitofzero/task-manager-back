@@ -5,6 +5,7 @@ import { ProjectsService } from '../../services/projects/projects.service';
 import { User } from '../../services/user/user.interface';
 import { AddUserDto } from './dto/add-user.dto';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { ShortProjectInfo } from '../../services/projects/short-project-info';
 
 @Controller('projects')
 export class ProjectsController {
@@ -13,6 +14,11 @@ export class ProjectsController {
   @Get()
   public getProjects(): Promise<Project[]> {
     return this.projects.getProjects();
+  }
+
+  @Get('short-info/:id')
+  public getShortProjectInfo(@Param() params: { id: string }): Promise<ShortProjectInfo> {
+    return this.projects.getShortProjectInfo(params.id);
   }
 
   @Get('users/:id')

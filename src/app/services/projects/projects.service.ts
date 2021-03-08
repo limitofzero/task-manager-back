@@ -5,6 +5,7 @@ import { AddUserDto } from '../../api/projects/dto/add-user.dto';
 import { DB_CLIENT } from '../../db/db.module';
 import { User } from '../user/user.interface';
 import { Project } from './project';
+import { ShortProjectInfo } from './short-project-info';
 
 @Injectable()
 export class ProjectsService {
@@ -14,6 +15,25 @@ export class ProjectsService {
     return this.client
       .query(`SELECT * FROM projects`)
       .then((result) => result.rows);
+  }
+
+  public async getShortProjectInfo(
+    projectId: string,
+  ): Promise<ShortProjectInfo> {
+    return this.client
+      .query(
+        `
+        SELECT projects.name, projects.id, COUNT(tasks.title) as task_count,
+       (SELECT COUNT(projects_users.user_id) as users_count FROM projects_users WHERE project_id = $1),
+       (SELECT COUNT(tasks.title) as closed_task_count FROM tasks where tasks.project_id = $1 AND tasks.status_id = 1)
+            FROM projects JOIN tasks ON
+                projects.id = $1 AND tasks.project_id = projects.id
+            JOIN projects_users pu on projects.id = pu.project_id
+            GROUP BY projects.name, projects.id;
+    `,
+        [projectId],
+      )
+      .then((result) => result.rows?.[0]);
   }
 
   public async findOneBy(params: Record<string, any>): Promise<Project> {
