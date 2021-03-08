@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+} from '@nestjs/common';
 
 import { Task } from '../../services/tasks/task';
 import { TasksService } from '../../services/tasks/tasks.service';
@@ -36,6 +43,10 @@ export class TasksController {
 
   @Post('create')
   public async create(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
-    return this.tasks.createTask(createTaskDto);
+    try {
+      return await this.tasks.createTask(createTaskDto);
+    } catch (e) {
+      throw new BadRequestException(e.message);
+    }
   }
 }

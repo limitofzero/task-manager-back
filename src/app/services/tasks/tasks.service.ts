@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Client } from 'pg';
 
+import { CreateTaskDto } from '../../api/tasks/dto/create-task.dto';
 import { DB_CLIENT } from '../../db/db.module';
 import { Task } from './task';
 
@@ -38,7 +39,7 @@ export class TasksService {
       .then((result) => result?.rows);
   }
 
-  public async createTask(createTaskDto: any): Promise<Task> {
+  public async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
     const {
       creatorId,
       performerId,
@@ -47,6 +48,21 @@ export class TasksService {
       description,
       projectId,
     } = createTaskDto;
+
+    const isCreatorInProject = await this.isUserHasInProject(
+      creatorId,
+      projectId,
+    );
+
+    if (!isCreatorInProject) {
+      throw Error(`Project hasn't user ${creatorId}`);
+    }
+
+    const isPerformerInProject =
+      !performerId || (await this.isUserHasInProject(performerId, projectId));
+    if (!isPerformerInProject) {
+      throw Error(`Project hasn't user ${projectId}`);
+    }
 
     return this.client
       .query(
@@ -58,5 +74,20 @@ export class TasksService {
         [creatorId, performerId, statusId, title, description, projectId],
       )
       .then((result) => result?.rows?.[0]);
+  }
+
+  private isUserHasInProject(
+    userId: string,
+    projectId: string,
+  ): Promise<boolean> {
+    return this.client
+      .query(
+        `
+        SELECT pu.user_id FROM projects_users as pu WHERE pu.user_id = $1 AND pu.project_id = $2;
+      `,
+        [userId, projectId],
+      )
+      .then((result) => result.rows?.[0])
+      .then((result) => !!result);
   }
 }
