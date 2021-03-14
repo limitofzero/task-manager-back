@@ -15,10 +15,10 @@ create unique index if not exists projects_name_uindex
     on projects (name);
 
 insert into projects (id, name)
-VALUES ('9d8ce441-3a05-4189-b7bd-59c9b3473a61' ,'ledger'),
+values ('9d8ce441-3a05-4189-b7bd-59c9b3473a61' ,'ledger'),
         ('81802dd8-3d5c-4826-80fa-c62ef8e7b6ef', 'stock market'),
         ('4a6351df-bac2-4efa-a61a-0a7f3109f8c2' ,'explorer')
-ON CONFLICT DO NOTHING;
+on conflict do nothing;
 
 -- users --
 
@@ -31,6 +31,12 @@ create table if not exists users
     email    varchar(50) not null,
     password text        not null
 );
+
+insert into users (id, username, email, password)
+values ('af273cc5-3960-49bf-9d63-382712280d6f' ,'admin', 'limitofzero@gmail', 'password'),
+       ('944fed24-ba23-46ff-8da8-1a386c15e57b' ,'alister', 'alister@mail', 'password'),
+       ('bbf9501f-23b2-4477-aa04-0f2f9e631a4f' ,'denis', 'denis@mail.ru', 'password')
+on conflict do nothing;
 
 create unique index if not exists users_email_uindex
     on users (email);
