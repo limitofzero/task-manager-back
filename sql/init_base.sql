@@ -86,6 +86,10 @@ create table if not exists task_statuses
 create unique index if not exists task_statuses_description_uindex
     on task_statuses (description);
 
+insert into public.task_statuses (id, description) values (1, 'opened') on conflict do nothing;
+insert into public.task_statuses (id, description) values (2, 'in progress') on conflict do nothing;
+insert into public.task_statuses (id, description) values (3, 'closed') on conflict do nothing;
+
 -- tasks --
 
 create table if not exists tasks
