@@ -14,6 +14,12 @@ create unique index if not exists projects_id_uindex
 create unique index if not exists projects_name_uindex
     on projects (name);
 
+insert into projects (id, name)
+VALUES ('9d8ce441-3a05-4189-b7bd-59c9b3473a61' ,'ledger'),
+        ('81802dd8-3d5c-4826-80fa-c62ef8e7b6ef', 'stock market'),
+        ('4a6351df-bac2-4efa-a61a-0a7f3109f8c2' ,'explorer')
+ON CONFLICT DO NOTHING;
+
 -- users --
 
 create table if not exists users
