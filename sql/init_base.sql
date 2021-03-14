@@ -66,6 +66,13 @@ create table if not exists projects_users
 create unique index if not exists projects_users_user_id_project_id_uindex
     on projects_users (user_id, project_id);
 
+insert into public.projects_users (id, user_id, project_id) values (1, 'af273cc5-3960-49bf-9d63-382712280d6f', '9d8ce441-3a05-4189-b7bd-59c9b3473a61') on conflict do nothing;
+insert into public.projects_users (id, user_id, project_id) values (2, 'af273cc5-3960-49bf-9d63-382712280d6f', '81802dd8-3d5c-4826-80fa-c62ef8e7b6ef') on conflict do nothing;
+insert into public.projects_users (id, user_id, project_id) values (3, 'af273cc5-3960-49bf-9d63-382712280d6f', '4a6351df-bac2-4efa-a61a-0a7f3109f8c2') on conflict do nothing;
+insert into public.projects_users (id, user_id, project_id) values (4, '944fed24-ba23-46ff-8da8-1a386c15e57b', '81802dd8-3d5c-4826-80fa-c62ef8e7b6ef') on conflict do nothing;
+insert into public.projects_users (id, user_id, project_id) values (5, '944fed24-ba23-46ff-8da8-1a386c15e57b', '9d8ce441-3a05-4189-b7bd-59c9b3473a61') on conflict do nothing;
+insert into public.projects_users (id, user_id, project_id) values (6, 'bbf9501f-23b2-4477-aa04-0f2f9e631a4f', '81802dd8-3d5c-4826-80fa-c62ef8e7b6ef') on conflict do nothing;
+
 -- status --
 
 create table if not exists task_statuses
