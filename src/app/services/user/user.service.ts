@@ -8,7 +8,9 @@ import { User } from './user.interface';
 @Injectable()
 export class UserService {
   constructor(@Inject(DB_CLIENT) private readonly client: Client) {
-    this.client.connect();
+    this.client.connect().catch(erro => {
+      console.error(erro);
+    });
   }
 
   public async getAll(): Promise<User[]> {
