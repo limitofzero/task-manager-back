@@ -14,6 +14,7 @@ const providers = [
         password: env.POSTGRES_PASSWORD,
         database: env.POSTGRES_DATABASE,
         port: +env.POSTGRES_PORT,
+        ssl: env.POSTGRES_SSL === 'true',
       });
     },
   },
