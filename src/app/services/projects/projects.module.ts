@@ -4,7 +4,7 @@ import { DbModule } from '../../db/db.module';
 import { ProjectsService } from './projects.service';
 
 @Module({
-  imports: [DbModule.forFeature()],
+  imports: [DbModule],
   providers: [ProjectsService],
   exports: [ProjectsService],
 })

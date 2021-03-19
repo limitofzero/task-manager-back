@@ -14,7 +14,7 @@ import { DbModule } from './db/db.module';
     TaskStatusesApiModule,
     TasksApiModule,
     ProjectsApiModule,
-    DbModule.forRoot(),
+    DbModule,
   ],
 })
 export class AppModule {}

@@ -1,4 +1,4 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { Client } from 'pg';
 
 const env = process.env;
@@ -22,23 +22,7 @@ const providers = [
 ];
 
 @Module({
-  providers: [],
-  exports: [],
+  providers,
+  exports: providers,
 })
-export class DbModule {
-  public static forRoot(): DynamicModule {
-    return {
-      module: DbModule,
-      providers,
-      exports: providers,
-    };
-  }
-
-  public static forFeature(): DynamicModule {
-    return {
-      module: DbModule,
-      providers,
-      exports: providers,
-    };
-  }
-}
+export class DbModule {}

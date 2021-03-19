@@ -4,7 +4,7 @@ import { DbModule } from '../../db/db.module';
 import { TaskStatusService } from './task-status.service';
 
 @Module({
-  imports: [DbModule.forFeature()],
+  imports: [DbModule],
   providers: [TaskStatusService],
   exports: [TaskStatusService],
 })
