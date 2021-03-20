@@ -1,8 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { Client } from 'pg';
+import { Injectable } from '@nestjs/common';
+import { Observable, of, throwError } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 
 import { CreateTaskDto } from '../../api/tasks/dto/create-task.dto';
-import { DB_CLIENT } from '../../db/db.module';
+import { DbClientService } from '../../db/db-client/db-client.service';
 import { Task } from './task';
 
 @Injectable()
@@ -13,33 +14,33 @@ export class TasksService {
            JOIN task_statuses ON tasks.status_id = task_statuses.id
     `;
 
-  constructor(@Inject(DB_CLIENT) private readonly client: Client) {}
+  constructor(private readonly client: DbClientService) {}
 
-  public async getAll(): Promise<Task[]> {
-    return this.client
-      .query(`${this.BASE_REQ};`)
-      .then((result) => result?.rows);
+  public getAll(): Observable<Task[]> {
+    return this.client.queryAll<Task>(`${this.BASE_REQ};`);
   }
 
-  public async getTasksByPerformerId(id: string): Promise<Task[]> {
-    return this.client
-      .query(`${this.BASE_REQ} WHERE performer_id = $1;`, [id])
-      .then((result) => result?.rows);
+  public getTasksByPerformerId(id: string): Observable<Task[]> {
+    return this.client.queryAll<Task>(
+      `${this.BASE_REQ} WHERE performer_id = $1;`,
+      [id],
+    );
   }
 
-  public async getTasksByCreatorId(id: string): Promise<Task[]> {
-    return this.client
-      .query(`${this.BASE_REQ} WHERE creator_id = $1;`, [id])
-      .then((result) => result?.rows);
+  public getTasksByCreatorId(id: string): Observable<Task[]> {
+    return this.client.queryAll<Task>(
+      `${this.BASE_REQ} WHERE creator_id = $1;`,
+      [id],
+    );
   }
 
-  public async getTasksByProjectId(id: string): Promise<Task[]> {
-    return this.client
-      .query(`${this.BASE_REQ} WHERE project_id = $1;`, [id])
-      .then((result) => result?.rows);
+  public getTasksByProjectId(id: string): Observable<Task[]> {
+    return this.client.queryAll(`${this.BASE_REQ} WHERE project_id = $1;`, [
+      id,
+    ]);
   }
 
-  public async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+  public createTask(createTaskDto: CreateTaskDto): Observable<Task> {
     const {
       creatorId,
       performerId,
@@ -49,66 +50,67 @@ export class TasksService {
       projectId,
     } = createTaskDto;
 
-    const isCreatorInProject = await this.isUserHasInProject(
-      creatorId,
-      projectId,
-    );
-
-    if (!isCreatorInProject) {
-      throw Error(`Project hasn't user ${creatorId}`);
-    }
-
-    const isPerformerInProject =
-      !performerId || (await this.isUserHasInProject(performerId, projectId));
-    if (!isPerformerInProject) {
-      throw Error(`Project hasn't user ${projectId}`);
-    }
-
-    return this.client
-      .query(
-        `
+    return this.isUserHasInProject(creatorId, projectId).pipe(
+      mergeMap((isCreatorInProject) => {
+        return isCreatorInProject
+          ? of(true)
+          : throwError(`Project hasn't user ${creatorId}`);
+      }),
+      mergeMap(() => {
+        return performerId
+          ? this.isUserHasInProject(performerId, projectId)
+          : of(true);
+      }),
+      mergeMap((isPerformerInProject) => {
+        return isPerformerInProject
+          ? of(true)
+          : throwError(`Project hasn't user ${projectId}`);
+      }),
+      mergeMap(() =>
+        this.client.queryOne<Task>(
+          `
         INSERT INTO tasks
         (creator_id, performer_id, status_id, title, description, project_id)
         VALUES($1, $2, $3, $4, $5, $6)
         RETURNING *`,
-        [creatorId, performerId, statusId, title, description, projectId],
-      )
-      .then((result) => result?.rows?.[0]);
+          [creatorId, performerId, statusId, title, description, projectId],
+        ),
+      ),
+    );
   }
 
-  public async assignUser(
+  public assignUser(
     taskId: string,
     userId: string,
     projectId: string,
-  ): Promise<Task> {
-    const isUserHasInProject = await this.isUserHasInProject(userId, projectId);
-
-    if (!isUserHasInProject) {
-      throw new Error(`Project hasn't user ${projectId}`);
-    }
-
-    return this.client
-      .query(
-        `
+  ): Observable<Task> {
+    return this.isUserHasInProject(userId, projectId).pipe(
+      mergeMap((isUserHasInProject) => {
+        if (isUserHasInProject) {
+          return this.client.queryOne<Task>(
+            `
       UPDATE tasks SET performer_id = $1 WHERE id = $2 RETURNING *;
     `,
-        [userId, taskId],
-      )
-      .then((result) => result?.rows?.[0]);
+            [userId, taskId],
+          );
+        }
+
+        return throwError(`Project hasn't user ${projectId}`);
+      }),
+    );
   }
 
   private isUserHasInProject(
     userId: string,
     projectId: string,
-  ): Promise<boolean> {
+  ): Observable<boolean> {
     return this.client
-      .query(
+      .queryOne(
         `
         SELECT pu.user_id FROM projects_users as pu WHERE pu.user_id = $1 AND pu.project_id = $2;
       `,
         [userId, projectId],
       )
-      .then((result) => result.rows?.[0])
-      .then((result) => !!result);
+      .pipe(map(Boolean));
   }
 }

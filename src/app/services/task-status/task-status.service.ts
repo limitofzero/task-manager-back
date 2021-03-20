@@ -1,24 +1,20 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { Client } from 'pg';
+import { Injectable } from '@nestjs/common';
+import { Observable } from 'rxjs';
 
-import { DB_CLIENT } from '../../db/db.module';
+import { DbClientService } from '../../db/db-client/db-client.service';
 import { TaskStatus } from './task-status';
 
 @Injectable()
 export class TaskStatusService {
-  constructor(@Inject(DB_CLIENT) private readonly client: Client) {}
+  constructor(private readonly client: DbClientService) {}
 
-  public async getTaskStatuses(): Promise<TaskStatus[]> {
-    return this.client
-      .query(`SELECT * FROM task_statuses`)
-      .then((result) => result?.rows);
+  public getTaskStatuses(): Observable<TaskStatus[]> {
+    return this.client.queryAll<TaskStatus>(`SELECT * FROM task_statuses`);
   }
 
-  public async addStatus(description: string): Promise<TaskStatus> {
-    return this.client
-      .query(
-        `INSERT INTO task_statuses (description) VALUES ('${description}') RETURNING *`,
-      )
-      .then((result) => result?.rows?.[0]);
+  public addStatus(description: string): Observable<TaskStatus> {
+    return this.client.queryOne<TaskStatus>(
+      `INSERT INTO task_statuses (description) VALUES ('${description}') RETURNING *`,
+    );
   }
 }

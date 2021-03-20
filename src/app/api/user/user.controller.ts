@@ -1,4 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
+import { Observable } from 'rxjs';
 
 import { Project } from '../../services/projects/project';
 import { User } from '../../services/user/user.interface';
@@ -9,14 +10,14 @@ export class UserController {
   constructor(protected readonly user: UserService) {}
 
   @Get()
-  public async getUsers(): Promise<User[]> {
+  public getUsers(): Observable<User[]> {
     return this.user.getAll();
   }
 
   @Get(':id/projects')
-  public async getUserProjects(
+  public getUserProjects(
     @Param() params: { id: string },
-  ): Promise<Project[]> {
+  ): Observable<Project[]> {
     return this.user.getUserProjects(params.id);
   }
 }
