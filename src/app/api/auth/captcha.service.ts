@@ -17,7 +17,6 @@ export class CaptchaService {
   constructor(private readonly http: HttpService) {}
 
   public validateCaptcha(response: string): Observable<boolean> {
-    return of(true); // todo
     const request = `${this.captchaApi}?response=${response}&secret=${this.secret}`;
 
     return this.http.post<CaptchaResponse>(request).pipe(
@@ -28,7 +27,6 @@ export class CaptchaService {
           if (response.data.success) {
             return of(true);
           } else {
-            // todo handle errors
             return throwError({
               message: data['error-codes'][0],
             });

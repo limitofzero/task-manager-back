@@ -14,9 +14,9 @@ export class UserService {
   }
 
   public getUserByEmail(email: string): Observable<User> {
-    return this.client.queryOne<User>(
-      `SELECT * FROM users WHERE email = '${email}'`,
-    );
+    return this.client.queryOne<User>(`SELECT * FROM users WHERE email = $1`, [
+      email,
+    ]);
   }
 
   public save(user: User): Observable<void> {

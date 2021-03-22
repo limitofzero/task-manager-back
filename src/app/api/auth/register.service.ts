@@ -25,12 +25,8 @@ export class RegisterService {
 
     return this.captcha.validateCaptcha(recaptcha).pipe(
       mergeMap(() => this.userService.getUserByEmail(email)),
-      tap(console.log),
-      map((user) => (!user ? registerRequest : null)), // todo error
+      map((user) => (!user ? registerRequest : null)),
       mergeMap((user) => this.sendEmailAndSaveUser(user)),
-      catchError((err: any) => {
-        return throwError(new BadRequestException(err));
-      }),
     );
   }
 
