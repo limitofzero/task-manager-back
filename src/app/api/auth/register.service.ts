@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
-import { catchError, map, mapTo, mergeMap, tap } from 'rxjs/operators';
+import { map, mapTo, mergeMap } from 'rxjs/operators';
 
 import { User } from '../../services/user/user.interface';
 import { UserService } from '../../services/user/user.service';

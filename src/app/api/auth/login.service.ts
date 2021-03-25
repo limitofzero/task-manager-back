@@ -36,12 +36,13 @@ export class LoginService {
     user: User,
     rememberMe: boolean,
   ): Observable<{ token: string }> {
-    const { username, email } = user;
+    const { username, email, id } = user;
     const expiresIn = this.getExpiresIn(rememberMe);
 
     return this.token
       .createJWT(
         {
+          id,
           username,
           email,
         },

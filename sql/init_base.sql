@@ -33,8 +33,8 @@ create table if not exists users
 );
 
 insert into users (id, username, email, password)
-values ('af273cc5-3960-49bf-9d63-382712280d6f' ,'admin', 'limitofzero@gmail', 'password'),
-       ('944fed24-ba23-46ff-8da8-1a386c15e57b' ,'alister', 'alister@mail', 'password'),
+values ('af273cc5-3960-49bf-9d63-382712280d6f' ,'admin', 'limitofzero@gmail.com', 'password'),
+       ('944fed24-ba23-46ff-8da8-1a386c15e57b' ,'alister', 'alister@mail.com', 'password'),
        ('bbf9501f-23b2-4477-aa04-0f2f9e631a4f' ,'denis', 'denis@mail.ru', 'password')
 on conflict do nothing;
 
@@ -94,7 +94,7 @@ insert into public.task_statuses (id, description) values (3, 'closed') on confl
 
 create table if not exists tasks
 (
-    id uuid default uuid_generate_v4() not null
+    id serial not null
         constraint tasks_pk
             primary key,
     title varchar(200) not null,
