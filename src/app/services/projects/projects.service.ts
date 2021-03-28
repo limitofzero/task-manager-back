@@ -61,6 +61,14 @@ export class ProjectsService {
     );
   }
 
+  public getUserProjects(userId: string): Observable<Project[]> {
+    return this.client.queryAll<Project>(
+        `
+        SELECT projects.id, projects.name FROM projects_users JOIN projects ON projects_users.user_id = '${userId}' AND projects.id = projects_users.project_id;
+        `,
+    );
+  }
+
   private constructConditions(params: Record<string, any>): string {
     return Object.keys(params).reduce((acc, key, index) => {
       if (index !== 0) {

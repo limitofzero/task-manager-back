@@ -43,4 +43,11 @@ export class ProjectsController {
   public addUser(@Body() user: AddUserDto): Observable<void> {
     return this.projects.addUser(user);
   }
+
+  @Get('by-user/:id')
+  public getUserProjects(
+      @Param() params: { id: string },
+  ): Observable<Project[]> {
+    return this.projects.getUserProjects(params.id);
+  }
 }
