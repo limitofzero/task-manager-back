@@ -10,7 +10,7 @@ import { Task } from './task';
 export class TasksService {
   private readonly BASE_REQ = `
       SELECT tasks.id, tasks.status_id AS status, tasks.creator_id, tasks.performer_id,
-       tasks.title, tasks.description, tasks.project_id, task_statuses.description AS status FROM tasks
+       tasks.title, tasks.description, tasks.project_id, tasks.type_id, task_statuses.description AS status FROM tasks
            JOIN task_statuses ON tasks.status_id = task_statuses.id
     `;
 
@@ -48,6 +48,7 @@ export class TasksService {
       title,
       description,
       projectId,
+      taskId,
     } = createTaskDto;
 
     return this.isUserHasInProject(creatorId, projectId).pipe(
@@ -70,10 +71,10 @@ export class TasksService {
         this.client.queryOne<Task>(
           `
         INSERT INTO tasks
-        (creator_id, performer_id, status_id, title, description, project_id)
-        VALUES($1, $2, $3, $4, $5, $6)
+        (creator_id, performer_id, status_id, title, description, project_id, type_id)
+        VALUES($1, $2, $3, $4, $5, $6, $7)
         RETURNING *`,
-          [creatorId, performerId, statusId, title, description, projectId],
+          [creatorId, performerId, statusId, title, description, projectId, taskId],
         ),
       ),
     );
