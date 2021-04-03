@@ -89,6 +89,22 @@ create unique index if not exists task_statuses_description_uindex
 insert into public.task_statuses (id, description) values (1, 'opened') on conflict do nothing;
 insert into public.task_statuses (id, description) values (2, 'in progress') on conflict do nothing;
 insert into public.task_statuses (id, description) values (3, 'closed') on conflict do nothing;
+insert into public.task_statuses (id, description) values (4, 'building') on conflict do nothing;
+
+-- task types --
+
+create table if not exists task_types
+(
+    id serial not null
+        constraint task_types_pk primary key,
+    description varchar(40) not null
+);
+
+insert into public.task_types (id, description) values (1, 'task') on conflict do nothing;
+insert into public.task_types (id, description) values (2, 'frontend feature') on conflict do nothing;
+insert into public.task_types (id, description) values (3, 'backend feature') on conflict do nothing;
+insert into public.task_types (id, description) values (4, 'bug') on conflict do nothing;
+insert into public.task_types (id, description) values (4, 'epic') on conflict do nothing;
 
 -- tasks --
 
