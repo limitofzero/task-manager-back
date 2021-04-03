@@ -127,6 +127,10 @@ create table if not exists tasks
         constraint tasks___fk_performer_id__users_id
             references users
             on update cascade on delete cascade,
+    type_id int not null
+        constraint tasks__fk_type_id__task_types_id
+            references task_types
+            on update cascade on delete cascade,
     status_id int not null
         constraint tasks___fk_status_id__task_statuses_id
             references task_statuses

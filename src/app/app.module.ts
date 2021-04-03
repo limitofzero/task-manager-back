@@ -6,6 +6,7 @@ import { TaskStatusesApiModule } from './api/task-statuses/task-statuses-api.mod
 import { TasksApiModule } from './api/tasks/tasks-api.module';
 import { UserApiModule } from './api/user/user-api.module';
 import { DbModule } from './db/db.module';
+import {TaskTypesApiModule} from './api/task-types/task-types-api.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { DbModule } from './db/db.module';
     TasksApiModule,
     ProjectsApiModule,
     DbModule,
+    TaskTypesApiModule,
   ],
 })
 export class AppModule {}
