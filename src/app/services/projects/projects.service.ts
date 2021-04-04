@@ -6,13 +6,18 @@ import { DbClientService } from '../../db/db-client/db-client.service';
 import { User } from '../user/user.interface';
 import { Project } from './project';
 import { ShortProjectInfo } from './short-project-info';
+import {GetProjectsFiltersDto} from '../../api/projects/dto/get-projects-filters.dto';
 
 @Injectable()
 export class ProjectsService {
   constructor(private readonly client: DbClientService) {}
 
-  public getProjects(): Observable<Project[]> {
-    return this.client.queryAll<Project>(`SELECT * FROM projects`);
+  public getProjects(params?: GetProjectsFiltersDto): Observable<Project[]> {
+    if (params) {
+      return this.getUserProjects(params.userId);
+    }
+
+    this.client.queryAll<Project>(`SELECT * FROM projects`);
   }
 
   public getShortProjectInfo(projectId: string): Observable<ShortProjectInfo> {
@@ -45,23 +50,23 @@ export class ProjectsService {
     );
   }
 
-  public getProjectUsers(id: string): Observable<User[]> {
-    return this.client.queryAll<User>(
-      `
-        SELECT users.id, users.username, users.email FROM users JOIN projects_users 
-        ON projects_users.project_id = $1 AND projects_users.user_id = users.id
-      `,
-      [id],
-    );
-  }
-
   public addUser(addUser: AddUserDto): Observable<void> {
     return this.client.justQuery(
       `INSERT INTO projects_users (user_id, project_id) VALUES ('${addUser.userId}' ,'${addUser.projectId}')`,
     );
   }
 
-  public getUserProjects(userId: string): Observable<Project[]> {
+  public getProjectUsers(id: string): Observable<User[]> {
+    return this.client.queryAll<User>(
+        `
+        SELECT users.id, users.username, users.email FROM users JOIN projects_users 
+        ON projects_users.project_id = $1 AND projects_users.user_id = users.id
+      `,
+        [id],
+    );
+  }
+
+  private getUserProjects(userId: string): Observable<Project[]> {
     return this.client.queryAll<Project>(
         `
         SELECT projects.id, projects.name FROM projects_users JOIN projects ON projects_users.user_id = '${userId}' AND projects.id = projects_users.project_id;
