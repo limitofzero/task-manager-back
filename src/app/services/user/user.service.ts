@@ -3,13 +3,24 @@ import { Observable } from 'rxjs';
 
 import { DbClientService } from '../../db/db-client/db-client.service';
 import { User } from './user.interface';
+import {GetUsersFilterDto} from '../../api/user/dto/get-users-filter.dto';
 
 @Injectable()
 export class UserService {
   constructor(private readonly client: DbClientService) {}
 
-  public getAll(): Observable<User[]> {
+  public getAll(filter: GetUsersFilterDto): Observable<User[]> {
+    if (filter) {
+      return this.getUsersByProjectId(filter.projectId);
+    }
+
     return this.client.queryAll<User>('SELECT * FROM users');
+  }
+
+  private getUsersByProjectId(projectId: string): Observable<User[]> {
+    return this.client.queryAll<User>(`
+        SELECT users.id, users.username, users.email FROM users JOIN projects_users ON users.id = projects_users.user_id AND projects_users.project_id = $1
+      `, [projectId]);
   }
 
   public getUserByEmail(email: string): Observable<User> {
