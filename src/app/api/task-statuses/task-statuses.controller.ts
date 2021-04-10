@@ -18,6 +18,6 @@ export class TaskStatusesController {
   public addStatus(
     @Body() status: CreateTaskStatusDto,
   ): Observable<TaskStatus> {
-    return this.taskStatus.addStatus(status.description);
+    return this.taskStatus.addStatus(status.name);
   }
 }

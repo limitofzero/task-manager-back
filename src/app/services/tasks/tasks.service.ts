@@ -10,7 +10,7 @@ import { Task } from './task';
 export class TasksService {
   private readonly BASE_REQ = `
       SELECT tasks.id, tasks.status_id AS status, tasks.creator_id, tasks.performer_id,
-       tasks.title, tasks.description, tasks.project_id, tasks.type_id, task_statuses.description AS status FROM tasks
+       tasks.title, tasks.description, tasks.project_id, tasks.type_id, task_statuses.name AS status FROM tasks
            JOIN task_statuses ON tasks.status_id = task_statuses.id
     `;
 

@@ -12,9 +12,9 @@ export class TaskStatusService {
     return this.client.queryAll<TaskStatus>(`SELECT * FROM task_statuses`);
   }
 
-  public addStatus(description: string): Observable<TaskStatus> {
+  public addStatus(name: string): Observable<TaskStatus> {
     return this.client.queryOne<TaskStatus>(
-      `INSERT INTO task_statuses (description) VALUES ('${description}') RETURNING *`,
+      `INSERT INTO task_statuses (name) VALUES ('${name}') RETURNING *`,
     );
   }
 }
