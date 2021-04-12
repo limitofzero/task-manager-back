@@ -23,6 +23,13 @@ export class TasksController {
     return this.tasks.getAll();
   }
 
+  @Post()
+  public createTask(@Body() createTaskDto: CreateTaskDto): Observable<Task> {
+    return this.tasks
+        .createTask(createTaskDto)
+        .pipe(catchError((e) => throwError(new BadRequestException(e.message))));
+  }
+
   @Get('performer/:id')
   public getByPerformerId(@Param() params: { id: string }): Observable<Task[]> {
     return this.tasks.getTasksByPerformerId(params.id);
@@ -36,13 +43,6 @@ export class TasksController {
   @Get('projects/:id')
   public getByProjectId(@Param() params: { id: string }): Observable<Task[]> {
     return this.tasks.getTasksByProjectId(params.id);
-  }
-
-  @Post('create')
-  public create(@Body() createTaskDto: CreateTaskDto): Observable<Task> {
-    return this.tasks
-      .createTask(createTaskDto)
-      .pipe(catchError((e) => throwError(new BadRequestException(e.message))));
   }
 
   @Post('assign-user')

@@ -48,7 +48,7 @@ export class TasksService {
       title,
       description,
       projectId,
-      taskId,
+      typeId,
     } = createTaskDto;
 
     return this.isUserHasInProject(creatorId, projectId).pipe(
@@ -74,7 +74,7 @@ export class TasksService {
         (creator_id, performer_id, status_id, title, description, project_id, type_id)
         VALUES($1, $2, $3, $4, $5, $6, $7)
         RETURNING *`,
-          [creatorId, performerId, statusId, title, description, projectId, taskId],
+          [creatorId, performerId, statusId, title, description, projectId, typeId],
         ),
       ),
     );

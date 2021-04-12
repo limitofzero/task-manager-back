@@ -17,7 +17,7 @@ export class CreateTaskDto {
   @IsNotEmpty()
   @IsInt()
   @IsPositive()
-  public taskId: string;
+  public typeId: number;
 
   @IsOptional()
   @IsNotEmpty()
