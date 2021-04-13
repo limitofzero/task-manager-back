@@ -11,7 +11,6 @@ import { catchError } from 'rxjs/operators';
 
 import { Task } from '../../services/tasks/task';
 import { TasksService } from '../../services/tasks/tasks.service';
-import { AssignUserDto } from './dto/assign-user.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 
 @Controller('tasks')
@@ -45,12 +44,12 @@ export class TasksController {
     return this.tasks.getTasksByProjectId(params.id);
   }
 
-  @Post('assign-user')
-  public assignUser(@Body() assignUserDto: AssignUserDto): Observable<Task> {
-    const { userId, taskId, projectId } = assignUserDto;
-
-    return this.tasks
-      .assignUser(taskId, userId, projectId)
-      .pipe(catchError((e) => throwError(new BadRequestException(e.message))));
-  }
+  // @Post('assign-user')
+  // public assignUser(@Body() assignUserDto: AssignUserDto): Observable<Task> {
+  //   const { userId, taskId, projectId } = assignUserDto;
+  //
+  //   return this.tasks
+  //     .assignUser(taskId, userId, projectId)
+  //     .pipe(catchError((e) => throwError(new BadRequestException(e.message))));
+  // }
 }
