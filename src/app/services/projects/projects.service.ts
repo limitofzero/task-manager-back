@@ -1,28 +1,28 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { Client } from 'pg';
+import { Injectable } from '@nestjs/common';
+import { Observable } from 'rxjs';
 
 import { AddUserDto } from '../../api/projects/dto/add-user.dto';
-import { DB_CLIENT } from '../../db/db.module';
+import { DbClientService } from '../../db/db-client/db-client.service';
 import { User } from '../user/user.interface';
 import { Project } from './project';
 import { ShortProjectInfo } from './short-project-info';
+import {GetProjectsFiltersDto} from '../../api/projects/dto/get-projects-filters.dto';
 
 @Injectable()
 export class ProjectsService {
-  constructor(@Inject(DB_CLIENT) private readonly client: Client) {}
+  constructor(private readonly client: DbClientService) {}
 
-  public async getProjects(): Promise<Project[]> {
-    return this.client
-      .query(`SELECT * FROM projects`)
-      .then((result) => result.rows);
+  public getProjects(params?: GetProjectsFiltersDto): Observable<Project[]> {
+    if (params) {
+      return this.getUserProjects(params.userId);
+    }
+
+    this.client.queryAll<Project>(`SELECT * FROM projects`);
   }
 
-  public async getShortProjectInfo(
-    projectId: string,
-  ): Promise<ShortProjectInfo> {
-    return this.client
-      .query(
-        `
+  public getShortProjectInfo(projectId: string): Observable<ShortProjectInfo> {
+    return this.client.queryOne<ShortProjectInfo>(
+      `
         SELECT projects.name, projects.id, COUNT(tasks.title) as task_count,
        (SELECT COUNT(projects_users.user_id) as users_count FROM projects_users WHERE project_id = $1),
        (SELECT COUNT(tasks.title) as closed_task_count FROM tasks where tasks.project_id = $1 AND tasks.status_id = 1)
@@ -31,48 +31,47 @@ export class ProjectsService {
             JOIN projects_users pu on projects.id = pu.project_id
             GROUP BY projects.name, projects.id;
     `,
-        [projectId],
-      )
-      .then((result) => result.rows?.[0]);
+      [projectId],
+    );
   }
 
-  public async findOneBy(params: Record<string, any>): Promise<Project> {
+  public findOneBy(params: Record<string, any>): Observable<Project> {
     const select = `SELECT * FROM projects WHERE`;
     const conditions = this.constructConditions(params);
-    console.log('REQ: ', `${select} ${conditions}`);
-    return this.client
-      .query(`${select} ${conditions}`)
-      .then((result) => result?.rows?.[0]);
+
+    return this.client.queryOne(`${select} ${conditions}`);
   }
 
-  public async createProject(project: { name: string }): Promise<Project> {
-    return this.client
-      .query(
-        `
+  public createProject(project: { name: string }): Observable<Project> {
+    return this.client.queryOne<Project>(
+      `
         INSERT INTO projects (name) VALUES ('${project.name}') RETURNING *
     `,
-      )
-      .then((result) => result.rows?.[0]);
+    );
   }
 
-  public async getProjectUsers(id: string): Promise<User[]> {
-    return this.client
-      .query(
+  public addUser(addUser: AddUserDto): Observable<void> {
+    return this.client.justQuery(
+      `INSERT INTO projects_users (user_id, project_id) VALUES ('${addUser.userId}' ,'${addUser.projectId}')`,
+    );
+  }
+
+  public getProjectUsers(id: string): Observable<User[]> {
+    return this.client.queryAll<User>(
         `
         SELECT users.id, users.username, users.email FROM users JOIN projects_users 
         ON projects_users.project_id = $1 AND projects_users.user_id = users.id
       `,
         [id],
-      )
-      .then((result) => result?.rows);
+    );
   }
 
-  public async addUser(addUser: AddUserDto): Promise<void> {
-    return this.client
-      .query(
-        `INSERT INTO projects_users (user_id, project_id) VALUES ('${addUser.userId}' ,'${addUser.projectId}')`,
-      )
-      .then(() => null);
+  private getUserProjects(userId: string): Observable<Project[]> {
+    return this.client.queryAll<Project>(
+        `
+        SELECT projects.id, projects.name FROM projects_users JOIN projects ON projects_users.user_id = '${userId}' AND projects.id = projects_users.project_id;
+        `,
+    );
   }
 
   private constructConditions(params: Record<string, any>): string {

@@ -1,49 +1,40 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { Client } from 'pg';
+import { Injectable } from '@nestjs/common';
+import { Observable } from 'rxjs';
 
-import { DB_CLIENT } from '../../db/db.module';
-import { Project } from '../projects/project';
+import { DbClientService } from '../../db/db-client/db-client.service';
 import { User } from './user.interface';
+import {GetUsersFilterDto} from '../../api/user/dto/get-users-filter.dto';
 
 @Injectable()
 export class UserService {
-  constructor(@Inject(DB_CLIENT) private readonly client: Client) {
-    this.client.connect().catch(erro => {
-      console.error(erro);
-    });
+  constructor(private readonly client: DbClientService) {}
+
+  public getAll(filter: GetUsersFilterDto): Observable<User[]> {
+    if (filter) {
+      return this.getUsersByProjectId(filter.projectId);
+    }
+
+    return this.client.queryAll<User>('SELECT * FROM users');
   }
 
-  public async getAll(): Promise<User[]> {
-    return this.client
-      .query('SELECT * FROM users')
-      .then((result) => result.rows);
+  private getUsersByProjectId(projectId: string): Observable<User[]> {
+    return this.client.queryAll<User>(`
+        SELECT users.id, users.username, users.email FROM users JOIN projects_users ON users.id = projects_users.user_id AND projects_users.project_id = $1
+      `, [projectId]);
   }
 
-  public async getUserByEmail(email: string): Promise<User> {
-    return this.client
-      .query(`SELECT * FROM users WHERE email = '${email}'`)
-      .then((result) => result.rows)
-      .then((records) => records[0]);
+  public getUserByEmail(email: string): Observable<User> {
+    return this.client.queryOne<User>(`SELECT * FROM users WHERE email = $1`, [
+      email,
+    ]);
   }
 
-  public async save(user: User): Promise<User> {
+  public save(user: User): Observable<void> {
     const { email, password, username } = user;
-    return this.client
-      .query(
-        `
+    return this.client.justQuery(
+      `
         INSERT INTO users (username, email, password)
         VALUES ('${username}', '${email}', '${password}')`,
-      )
-      .then();
-  }
-
-  public async getUserProjects(id: string): Promise<Project[]> {
-    return this.client
-      .query(
-        `
-        SELECT projects.id, projects.name FROM projects_users JOIN projects ON projects_users.user_id = '${id}' AND projects.id = projects_users.project_id;
-        `,
-      )
-      .then((result) => result?.rows);
+    );
   }
 }

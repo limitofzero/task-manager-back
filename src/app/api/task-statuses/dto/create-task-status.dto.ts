@@ -4,5 +4,5 @@ export class CreateTaskStatusDto {
   @IsNotEmpty()
   @IsString()
   @MinLength(1)
-  public description: string;
+  public name: string;
 }

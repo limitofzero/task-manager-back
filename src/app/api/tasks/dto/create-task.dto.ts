@@ -14,6 +14,11 @@ export class CreateTaskDto {
   @IsUUID()
   public creatorId: string;
 
+  @IsNotEmpty()
+  @IsInt()
+  @IsPositive()
+  public typeId: number;
+
   @IsOptional()
   @IsNotEmpty()
   @IsUUID()

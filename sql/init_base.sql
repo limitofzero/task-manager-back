@@ -33,8 +33,8 @@ create table if not exists users
 );
 
 insert into users (id, username, email, password)
-values ('af273cc5-3960-49bf-9d63-382712280d6f' ,'admin', 'limitofzero@gmail', 'password'),
-       ('944fed24-ba23-46ff-8da8-1a386c15e57b' ,'alister', 'alister@mail', 'password'),
+values ('af273cc5-3960-49bf-9d63-382712280d6f' ,'admin', 'limitofzero@gmail.com', 'password'),
+       ('944fed24-ba23-46ff-8da8-1a386c15e57b' ,'alister', 'alister@mail.com', 'password'),
        ('bbf9501f-23b2-4477-aa04-0f2f9e631a4f' ,'denis', 'denis@mail.ru', 'password')
 on conflict do nothing;
 
@@ -80,21 +80,37 @@ create table if not exists task_statuses
     id serial not null
         constraint task_statuses_pk
             primary key,
-    description varchar(50) not null
+    name varchar(50) not null
 );
 
-create unique index if not exists task_statuses_description_uindex
-    on task_statuses (description);
+create unique index if not exists task_statuses_name_uindex
+    on task_statuses (name);
 
-insert into public.task_statuses (id, description) values (1, 'opened') on conflict do nothing;
-insert into public.task_statuses (id, description) values (2, 'in progress') on conflict do nothing;
-insert into public.task_statuses (id, description) values (3, 'closed') on conflict do nothing;
+insert into public.task_statuses (id, name) values (1, 'opened') on conflict do nothing;
+insert into public.task_statuses (id, name) values (2, 'in progress') on conflict do nothing;
+insert into public.task_statuses (id, name) values (3, 'closed') on conflict do nothing;
+insert into public.task_statuses (id, name) values (4, 'building') on conflict do nothing;
+
+-- task types --
+
+create table if not exists task_types
+(
+    id serial not null
+        constraint task_types_pk primary key,
+    name varchar(40) not null
+);
+
+insert into public.task_types (id, name) values (1, 'task') on conflict do nothing;
+insert into public.task_types (id, name) values (2, 'frontend feature') on conflict do nothing;
+insert into public.task_types (id, name) values (3, 'backend feature') on conflict do nothing;
+insert into public.task_types (id, name) values (4, 'bug') on conflict do nothing;
+insert into public.task_types (id, name) values (4, 'epic') on conflict do nothing;
 
 -- tasks --
 
 create table if not exists tasks
 (
-    id uuid default uuid_generate_v4() not null
+    id serial not null
         constraint tasks_pk
             primary key,
     title varchar(200) not null,
@@ -110,6 +126,10 @@ create table if not exists tasks
     performer_id uuid
         constraint tasks___fk_performer_id__users_id
             references users
+            on update cascade on delete cascade,
+    type_id int not null
+        constraint tasks__fk_type_id__task_types_id
+            references task_types
             on update cascade on delete cascade,
     status_id int not null
         constraint tasks___fk_status_id__task_statuses_id

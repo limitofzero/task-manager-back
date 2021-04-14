@@ -6,6 +6,8 @@ import {
   Param,
   Post,
 } from '@nestjs/common';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 import { Task } from '../../services/tasks/task';
 import { TasksService } from '../../services/tasks/tasks.service';
@@ -17,47 +19,38 @@ export class TasksController {
   constructor(public readonly tasks: TasksService) {}
 
   @Get()
-  public async getAll(): Promise<Task[]> {
+  public getAll(): Observable<Task[]> {
     return this.tasks.getAll();
   }
 
+  @Post()
+  public createTask(@Body() createTaskDto: CreateTaskDto): Observable<Task> {
+    return this.tasks
+        .createTask(createTaskDto)
+        .pipe(catchError((e) => throwError(new BadRequestException(e.message))));
+  }
+
   @Get('performer/:id')
-  public async getByPerformerId(
-    @Param() params: { id: string },
-  ): Promise<Task[]> {
+  public getByPerformerId(@Param() params: { id: string }): Observable<Task[]> {
     return this.tasks.getTasksByPerformerId(params.id);
   }
 
   @Get('creator/:id')
-  public async getByCreatorId(
-    @Param() params: { id: string },
-  ): Promise<Task[]> {
+  public getByCreatorId(@Param() params: { id: string }): Observable<Task[]> {
     return this.tasks.getTasksByCreatorId(params.id);
   }
 
   @Get('projects/:id')
-  public async getByProjectId(
-    @Param() params: { id: string },
-  ): Promise<Task[]> {
+  public getByProjectId(@Param() params: { id: string }): Observable<Task[]> {
     return this.tasks.getTasksByProjectId(params.id);
   }
 
-  @Post('create')
-  public async create(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
-    try {
-      return await this.tasks.createTask(createTaskDto);
-    } catch (e) {
-      throw new BadRequestException(e.message);
-    }
-  }
-
   @Post('assign-user')
-  public async assignUser(@Body() assignUserDto: AssignUserDto): Promise<Task> {
+  public assignUser(@Body() assignUserDto: AssignUserDto): Observable<Task> {
     const { userId, taskId, projectId } = assignUserDto;
-    try {
-      return await this.tasks.assignUser(taskId, userId, projectId);
-    } catch (e) {
-      throw new BadRequestException(e.message);
-    }
+
+    return this.tasks
+      .assignUser(taskId, userId, projectId)
+      .pipe(catchError((e) => throwError(new BadRequestException(e.message))));
   }
 }

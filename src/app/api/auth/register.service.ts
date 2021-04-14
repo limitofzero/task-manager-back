@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
-import { catchError, map, mapTo, mergeMap, tap } from 'rxjs/operators';
+import { map, mapTo, mergeMap } from 'rxjs/operators';
 
 import { User } from '../../services/user/user.interface';
 import { UserService } from '../../services/user/user.service';
@@ -25,12 +25,8 @@ export class RegisterService {
 
     return this.captcha.validateCaptcha(recaptcha).pipe(
       mergeMap(() => this.userService.getUserByEmail(email)),
-      tap(console.log),
-      map((user) => (!user ? registerRequest : null)), // todo error
+      map((user) => (!user ? registerRequest : null)),
       mergeMap((user) => this.sendEmailAndSaveUser(user)),
-      catchError((err: any) => {
-        return throwError(new BadRequestException(err));
-      }),
     );
   }
 
