@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -12,13 +13,20 @@ import { catchError } from 'rxjs/operators';
 import { Task } from '../../services/tasks/task';
 import { TasksService } from '../../services/tasks/tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
+import {GetTasksFilterDto} from './dto/get-tasks-filter.dto';
 
 @Controller('tasks')
 export class TasksController {
   constructor(public readonly tasks: TasksService) {}
 
   @Get()
-  public getAll(): Observable<Task[]> {
+  public getAll(
+      @Query() params: GetTasksFilterDto,
+  ): Observable<Task[]> {
+    if (params?.performerId) {
+      return this.tasks.getTasksByPerformerId(params.performerId);
+    }
+
     return this.tasks.getAll();
   }
 
@@ -27,11 +35,6 @@ export class TasksController {
     return this.tasks
         .createTask(createTaskDto)
         .pipe(catchError((e) => throwError(new BadRequestException(e.message))));
-  }
-
-  @Get('performer/:id')
-  public getByPerformerId(@Param() params: { id: string }): Observable<Task[]> {
-    return this.tasks.getTasksByPerformerId(params.id);
   }
 
   @Get('creator/:id')
