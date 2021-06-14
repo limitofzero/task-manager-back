@@ -3,9 +3,7 @@ import { BadRequestException, ValidationError } from '@nestjs/common';
 import { DtoPropertyError } from '../dto-errors/dto-property-error.interface';
 import { InvalidArgumentsException } from '../exceptions/invalid-arguments.exception';
 
-export function dtoExceptionFactory(
-  errors: ValidationError[],
-): BadRequestException {
+export function dtoExceptionFactory(errors: ValidationError[]): BadRequestException {
   const convertedErrors = convertDtoErrors(errors);
   return new InvalidArgumentsException({
     errors: convertedErrors,
