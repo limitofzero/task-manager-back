@@ -17,6 +17,6 @@ import { UserModule } from './user/user.module';
     DbModule,
     ProjectModule,
     TaskTypeModule,
-  ],g
+  ],
 })
 export class AppModule {}
