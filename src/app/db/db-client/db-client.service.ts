@@ -12,15 +12,11 @@ export class DbClientService {
   }
 
   public queryAll<T>(query: string, args: any[] = []): Observable<T[]> {
-    return from(this.client.query(query, args)).pipe(
-      map((result) => result.rows as T[]),
-    );
+    return from(this.client.query(query, args)).pipe(map((result) => result.rows as T[]));
   }
 
   public queryOne<T>(query: string, args: any[] = []): Observable<T> {
-    return this.queryAll<T>(query, args).pipe(
-      map((records) => (records ? records[0] : null)),
-    );
+    return this.queryAll<T>(query, args).pipe(map((records) => (records ? records[0] : null)));
   }
 
   public justQuery(query: string, args: any[] = []): Observable<void> {

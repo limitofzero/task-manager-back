@@ -13,15 +13,11 @@ export class KeyValueStoreService {
 
   constructor(@Inject(REDIS) private readonly redis: IORedis.Redis) {
     const defaultExpTime = process.env.REDIS_DEFAULT_EXP_TIME;
-    this.defaultExpTime = defaultExpTime
-      ? +defaultExpTime
-      : DEFAULT_KEY_EXP_TIME;
+    this.defaultExpTime = defaultExpTime ? +defaultExpTime : DEFAULT_KEY_EXP_TIME;
   }
 
   public get<T>(key: string): Observable<T> {
-    return defer(() => this.redis.get(key)).pipe(
-      map((value) => JSON.parse(value) as T),
-    );
+    return defer(() => this.redis.get(key)).pipe(map((value) => JSON.parse(value) as T));
   }
 
   public remove(key: string): Observable<void> {
@@ -29,9 +25,7 @@ export class KeyValueStoreService {
   }
 
   public getAndRemove<T>(key: string): Observable<T> {
-    return this.get<T>(key).pipe(
-      mergeMap((value) => this.remove(key).pipe(mapTo(value))),
-    );
+    return this.get<T>(key).pipe(mergeMap((value) => this.remove(key).pipe(mapTo(value))));
   }
 
   public set<T>(key: string, value: T): Observable<void> {
@@ -40,15 +34,9 @@ export class KeyValueStoreService {
     return defer(() => this.redis.set(key, valueAsString)).pipe(mapTo(null));
   }
 
-  public setWithExp<T>(
-    key: string,
-    value: T,
-    expTime: number,
-  ): Observable<void> {
+  public setWithExp<T>(key: string, value: T, expTime: number): Observable<void> {
     const valueAsString = JSON.stringify(value);
 
-    return defer(() => this.redis.set(key, valueAsString, 'EX', expTime)).pipe(
-      mapTo(null),
-    );
+    return defer(() => this.redis.set(key, valueAsString, 'EX', expTime)).pipe(mapTo(null));
   }
 }

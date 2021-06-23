@@ -1,22 +1,22 @@
 import { Module } from '@nestjs/common';
 
-import { AuthApiModule } from './api/auth/auth-api.module';
-import { ProjectsApiModule } from './api/projects/projects-api.module';
-import { TaskStatusesApiModule } from './api/task-statuses/task-statuses-api.module';
-import { TasksApiModule } from './api/tasks/tasks-api.module';
-import { UserApiModule } from './api/user/user-api.module';
+import { AuthModule } from './auth/auth.module';
 import { DbModule } from './db/db.module';
-import {TaskTypesApiModule} from './api/task-types/task-types-api.module';
+import { ProjectModule } from './project/project.module';
+import { TaskStatusModule } from './task-status/task-status.module';
+import { TaskTypeModule } from './task-type/task-type.module';
+import { TaskModule } from './task/task.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
-    AuthApiModule,
-    UserApiModule,
-    TaskStatusesApiModule,
-    TasksApiModule,
-    ProjectsApiModule,
+    AuthModule,
+    UserModule,
+    TaskModule,
+    TaskStatusModule,
     DbModule,
-    TaskTypesApiModule,
+    ProjectModule,
+    TaskTypeModule,
   ],
 })
 export class AppModule {}
