@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
 import { GetUsersFilterDto } from './dto/get-users-filter.dto';
@@ -12,5 +12,11 @@ export class UserController {
   @Get()
   public getUsers(@Query() params: GetUsersFilterDto): Observable<User[]> {
     return this.user.getAll(params);
+  }
+
+  @Get(':id')
+  public getUserById(@Param() params: { id: string }): Observable<User> {
+    console.log(params.id);
+    return this.user.getUserById(params.id);
   }
 }

@@ -30,6 +30,13 @@ export class UserService {
     return this.client.queryOne<User>(`SELECT * FROM users WHERE email = $1`, [email]);
   }
 
+  public getUserById(id: string): Observable<User> {
+    return this.client.queryOne<User>(
+      `SELECT u.id, u.username, u.email FROM users as u WHERE u.id = $1`,
+      [id],
+    );
+  }
+
   public save(user: User): Observable<void> {
     const { email, password, username } = user;
     return this.client.justQuery(

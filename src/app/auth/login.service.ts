@@ -17,18 +17,18 @@ export class LoginService {
     return from(this.userService.getUserByEmail(email)).pipe(
       mergeMap((user) =>
         user.password === password
-          ? this.returnToken(rememberMe)
+          ? this.returnToken(user.id, rememberMe)
           : throwError(new BadRequestException("User with this email/password doesn't exist")),
       ),
     );
   }
 
-  private returnToken(rememberMe: boolean): Observable<{ token: string }> {
+  private returnToken(userId: string, rememberMe: boolean): Observable<{ token: string }> {
     const expiresIn = this.getExpiresIn(rememberMe);
 
     return this.token
       .createJWT(
-        {},
+        { id: userId },
         {
           expiresIn,
         },
