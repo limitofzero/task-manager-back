@@ -20,14 +20,17 @@ export class UserService {
   private getUsersByProjectId(projectId: string): Observable<User[]> {
     return this.client.queryAll<User>(
       `
-        SELECT users.id, users.username, users.email FROM users JOIN projects_users ON users.id = projects_users.user_id AND projects_users.project_id = $1
+        SELECT u.id, u.username, u.email FROM users as u JOIN projects_users ON u.id = projects_users.user_id AND projects_users.project_id = $1
       `,
       [projectId],
     );
   }
 
   public getUserByEmail(email: string): Observable<User> {
-    return this.client.queryOne<User>(`SELECT * FROM users WHERE email = $1`, [email]);
+    return this.client.queryOne<User>(
+      `SELECT u.id, u.username, u.email, u.password FROM users as u WHERE email = $1`,
+      [email],
+    );
   }
 
   public getUserById(id: string): Observable<User> {

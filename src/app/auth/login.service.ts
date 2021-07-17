@@ -16,28 +16,22 @@ export class LoginService {
 
     return from(this.userService.getUserByEmail(email)).pipe(
       mergeMap((user) =>
-        user.password === password
-          ? this.returnToken(user.id, rememberMe)
+        user && user.password === password
+          ? this.returnToken(user.id, rememberMe).pipe(map((token) => ({ token })))
           : throwError(new BadRequestException("User with this email/password doesn't exist")),
       ),
     );
   }
 
-  private returnToken(userId: string, rememberMe: boolean): Observable<{ token: string }> {
+  private returnToken(userId: string, rememberMe: boolean): Observable<string> {
     const expiresIn = this.getExpiresIn(rememberMe);
 
-    return this.token
-      .createJWT(
-        { id: userId },
-        {
-          expiresIn,
-        },
-      )
-      .pipe(
-        map((token) => ({
-          token,
-        })),
-      );
+    return this.token.createJWT(
+      { id: userId },
+      {
+        expiresIn,
+      },
+    );
   }
 
   private getExpiresIn(rememberMe: boolean): string {
